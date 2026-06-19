@@ -1,0 +1,248 @@
+import React, { useState } from 'react';
+import { Pill, Dna, Zap, Activity, HeartPulse, Microscope, Dumbbell, BookOpen, ArrowRight, ThumbsUp, UserCheck, ChevronDown, CheckCircle2, X } from 'lucide-react';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState(null);
+  const [expandedFaq, setExpandedFaq] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const targets = [
+    {
+      title: "의약학/간호 계열 지망생",
+      desc: "의대, 약대, 간호대 등 보건 의료 계열 진학을 목표로 하는 학생에게는 선택이 아닌 필수! 2028학년도 대입부터 의학, 약학 분야 핵심 권장 과목으로 지정되었습니다.",
+      icon: <HeartPulse className="w-8 h-8 text-rose-400" />
+    },
+    {
+      title: "생명공학/화학 관련 학과 지망생",
+      desc: "생명과학, 생명공학, 화장품공학, 식품영양학과 등에서 다루는 생화학의 기초를 탄탄하게 다질 수 있습니다.",
+      icon: <Microscope className="w-8 h-8 text-blue-400" />
+    },
+    {
+      title: "수능 전, 생명과학 기초를 다지고 싶은 학생",
+      desc: "기존 '생명과학Ⅱ'에서 가장 핵심적이고 재미있는 '세포'와 '물질대사' 부분만 쏙쏙 뽑아 만든 과목이라 내용이 상대적으로 쉽고 재미있습니다.",
+      icon: <Zap className="w-8 h-8 text-yellow-400" />
+    }
+  ];
+
+  const syllabus = [
+    {
+      title: "1. 세포의 모든 것",
+      items: ["탄수화물, 지질, 단백질, 핵산의 비밀", "동물세포 vs 식물세포, 누가 더 쎌까?", "세포막을 통과하는 물질들의 눈치 게임"]
+    },
+    {
+      title: "2. 물질대사와 에너지",
+      items: ["내 몸의 에너지 화폐, ATP", "내가 왜 살찔까? 대사성 질환 파헤치기", "없으면 다 죽는 마법의 단백질 '효소'"]
+    },
+    {
+      title: "3. 세포호흡과 광합성",
+      items: ["에너지 발전소 미토콘드리아", "태양광을 에너지로! 엽록체", "산소호흡 vs 발효, 알코올은 어떻게 만들어질까?"]
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans sm:pb-20 pb-0 overflow-x-hidden">
+      
+      {/* Mobile Navbar / Header */}
+      <nav className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 p-4 flex justify-center items-center">
+        <div className="flex items-center gap-2 font-bold text-teal-400 text-xl tracking-tight">
+          <Dna className="w-6 h-6" />
+          <span>과목선택 가이드</span>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative px-6 pt-16 pb-20 text-center flex flex-col items-center">
+        <div className="absolute top-20 -left-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
+        
+        <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-teal-500/10 text-teal-300 font-bold text-xs mb-6 border border-teal-500/20 shadow-[0_0_15px_rgba(20,184,166,0.15)]">
+          <Activity size={14} /> 2022 개정 교육과정 진로선택 과목
+        </span>
+        
+        <h1 className="text-4xl sm:text-6xl font-extrabold mb-4 leading-tight tracking-tighter">
+          세포와 <br className="sm:hidden"/>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-400">물질대사</span>
+        </h1>
+        
+        <p className="text-lg sm:text-xl text-slate-400 mb-10 font-light max-w-md mx-auto leading-relaxed">
+          내 몸속 초소형 공장 견학하기!<br/> 숨 쉬고 밥 먹는 당신, 이미 수강할 자격은 충분합니다.
+        </p>
+        
+        {/* Interactive Interactive CTA */}
+        <button 
+          className="group relative w-full sm:w-auto bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-lg shadow-teal-500/25 transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden"
+          onClick={() => document.getElementById('target-section').scrollIntoView({ behavior: 'smooth' })}
+        >
+          <span className="relative z-10 flex items-center gap-2">나도 들어야 할까? 확인하기 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform"/></span>
+          <div className="absolute inset-0 bg-white/20 translate-y-full group-active:translate-y-0 transition-transform duration-200 ease-out"></div>
+        </button>
+      </header>
+
+      {/* Target Section (Interactive Tabs) */}
+      <section id="target-section" className="px-5 py-12 scroll-mt-20">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-2">
+          <UserCheck className="text-teal-400" /> 이런 학생에게 추천해요!
+        </h2>
+        <p className="text-slate-400 mb-8 text-sm">카드를 터치해서 자세한 내용을 확인해보세요.</p>
+        
+        <div className="space-y-4">
+          {targets.map((target, idx) => (
+            <div 
+              key={idx}
+              onClick={() => setActiveTab(activeTab === idx ? null : idx)}
+              className={`bg-slate-800 border ${activeTab === idx ? 'border-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.15)]' : 'border-slate-700'} rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer`}
+            >
+              <div className="p-5 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={`p-2 rounded-xl ${activeTab === idx ? 'bg-slate-900' : 'bg-slate-900/50'}`}>
+                    {target.icon}
+                  </div>
+                  <h3 className={`font-bold text-lg ${activeTab === idx ? 'text-teal-300' : 'text-slate-200'}`}>
+                    {target.title}
+                  </h3>
+                </div>
+                <ChevronDown className={`text-slate-500 transition-transform duration-300 ${activeTab === idx ? 'rotate-180 text-teal-400' : ''}`} />
+              </div>
+              
+              <div className={`px-5 overflow-hidden transition-all duration-300 ease-in-out ${activeTab === idx ? 'max-h-40 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="pt-2 border-t border-slate-700/50 text-slate-300 text-sm leading-relaxed">
+                  {target.desc}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Syllabus Section */}
+      <section className="px-5 py-12 bg-slate-800/50">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center gap-2">
+          <BookOpen className="text-blue-400" /> 무엇을 배우나요?
+        </h2>
+        
+        <div className="grid sm:grid-cols-3 gap-4">
+          {syllabus.map((unit, idx) => (
+            <div key={idx} className="bg-slate-900 p-6 rounded-3xl border border-slate-700/50">
+              <h3 className="font-bold text-xl text-teal-300 mb-4">{unit.title}</h3>
+              <ul className="space-y-3">
+                {unit.items.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                    <CheckCircle2 size={16} className="text-slate-500 shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Sengkibu Hook */}
+      <section className="px-5 py-16 relative">
+        <div className="bg-gradient-to-br from-teal-900/40 to-blue-900/40 rounded-3xl p-6 sm:p-10 border border-teal-500/20 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-2xl rounded-full"></div>
+          
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">생기부 프리패스 치트키 🚀</h2>
+          <p className="text-slate-300 text-sm sm:text-base mb-6 leading-relaxed">
+            단순 암기 과목이 아닙니다. 이 과목은 실험 데이터 분석과 탐구를 중시합니다.<br className="hidden sm:block"/>
+            수행평가나 발표를 통해 자신의 진로와 연계된 깊이 있는 세특을 남기기 가장 좋은 과목입니다.
+          </p>
+          
+          <div className="bg-slate-900/80 rounded-2xl p-5 space-y-4 text-sm">
+            <div className="flex gap-3">
+              <ThumbsUp className="text-teal-400 shrink-0" size={20} />
+              <p><strong className="text-slate-200">의약학 지망생:</strong> '효소의 작용 기작'을 활용해 특정 질병의 치료제 개발 원리 보고서 작성 가능</p>
+            </div>
+            <div className="flex gap-3">
+              <ThumbsUp className="text-teal-400 shrink-0" size={20} />
+              <p><strong className="text-slate-200">식품영양 지망생:</strong> '세포호흡과 발효' 단원을 연계하여 발효 식품의 원리 및 유용성 탐구 가능</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Accordion */}
+      <section className="px-5 pb-20">
+        <h2 className="text-2xl font-bold mb-6 text-center">자주 묻는 질문</h2>
+        <div className="space-y-3">
+          {[
+            { q: "내용이 너무 어렵지 않나요?", a: "기존 생명과학2에서 어렵고 복잡한 계산 문제 위주였던 유전 파트가 빠졌습니다! 암기보다는 원리 이해와 실생활 사례 중심이라 훨씬 재미있게 접근할 수 있습니다." },
+            { q: "수능 과목에 들어가나요?", a: "2028 수능 개편안에 따르면 탐구 영역은 통합과학으로 치러지므로 수능 직접 출제 범위는 아닙니다. 하지만 대학 내신 반영 및 전공 적합성 평가(교과 평가)에서 매우 중요하게 작용합니다." }
+          ].map((faq, idx) => (
+             <div 
+             key={idx}
+             onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
+             className="bg-slate-800 rounded-2xl p-4 cursor-pointer"
+           >
+             <div className="flex justify-between items-center font-bold text-sm">
+               <span>Q. {faq.q}</span>
+               <ChevronDown className={`text-slate-400 transition-transform ${expandedFaq === idx ? 'rotate-180' : ''}`} size={18}/>
+             </div>
+             {expandedFaq === idx && (
+               <div className="mt-3 pt-3 border-t border-slate-700 text-sm text-slate-400 leading-relaxed">
+                 A. {faq.a}
+               </div>
+             )}
+           </div>
+          ))}
+        </div>
+      </section>
+
+      {}
+      {/* Final CTA / Footer */}
+      <footer className="relative bg-slate-950 px-6 py-20 mt-10 text-center overflow-hidden border-t border-slate-800">
+        {/* 배경 은은한 빛 효과 */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[400px] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+        <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 relative z-10 tracking-tight">
+          생명과학의 진짜 재미는<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-400">세포 속</span>에서 시작됩니다.
+        </h2>
+        
+        <p className="text-slate-400 mb-10 text-base sm:text-lg relative z-10">
+          지금 바로 수강 신청하고 내 몸속 우주를 탐험하세요!
+        </p>
+
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="group relative z-10 inline-flex items-center gap-3 bg-white text-slate-900 font-bold text-lg sm:text-xl py-4 px-10 rounded-full hover:bg-teal-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(20,184,166,0.6)] transform hover:-translate-y-1 active:scale-95"
+        >
+          망설이지 말고 선택하기 <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
+        </button>
+
+        <p className="mt-12 text-slate-500 text-xs sm:text-sm relative z-10 leading-relaxed">
+          * 주의사항 : 밥 먹을 때마다 침 속의 아밀레이스가 신경 쓰일 수 있음. <br className="hidden sm:block"/>
+          (근손실 걱정하는 친구에게 이 과목을 적극 추천 요망)
+        </p>
+      </footer>
+
+      {/* Custom Modal (Popup) */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          <div className="relative bg-slate-800 border border-teal-500/50 p-8 rounded-3xl shadow-[0_0_40px_rgba(20,184,166,0.3)] max-w-sm w-full text-center transform transition-all animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+            >
+              <X size={24} />
+            </button>
+            <div className="mb-6 inline-flex p-4 bg-teal-500/20 rounded-full text-teal-400">
+              <HeartPulse size={40} className="animate-pulse" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold mb-4 leading-relaxed">
+              #문의는 3층 별관 융합과학부<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-400 text-3xl">초미녀현진쌤</span>에게 👩‍🏫✨
+            </h3>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="w-full bg-teal-500 hover:bg-teal-400 text-slate-900 font-bold py-3 px-6 rounded-xl transition-colors mt-4"
+            >
+              확인했습니다!
+            </button>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
