@@ -656,9 +656,6 @@
             if (ans.classList.contains('hidden')) {
                 ans.classList.remove('hidden');
                 icon.style.transform = 'rotate(180deg)';
-                // 아코디언 열 때 꿀잼 토스트 
-                if(id === 1) showToast("1등급은 내 차지! 🏆");
-                if(id === 5) showToast("진짜라니까요? 😤");
             } else {
                 ans.classList.add('hidden');
                 icon.style.transform = 'rotate(0deg)';
@@ -747,7 +744,7 @@
         // 8페이지: Confetti Fireworks Logic (폭죽 효과)
         function triggerConfetti(btn) {
             // 클릭 시 텍스트를 변경하고 원래대로 돌아가는 타이머(setTimeout)를 삭제하여 계속 유지되게 함
-            btn.innerHTML = "탁월한 선택입니다! 🎉<br><span class='text-sm mt-1 inline-block'>수강신청 페이지로 고고!</span>";
+            btn.innerHTML = "탁월한 선택입니다! 🎉";
             
             // 색상 및 스타일 영구 변경 (처음 클릭할 때만 클래스 교체)
             if (btn.classList.contains('from-yellow-400')) {
