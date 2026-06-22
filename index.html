@@ -1,248 +1,746 @@
-import React, { useState } from 'react';
-import { Pill, Dna, Zap, Activity, HeartPulse, Microscope, Dumbbell, BookOpen, ArrowRight, ThumbsUp, UserCheck, ChevronDown, CheckCircle2, X } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>세포와 물질대사 박람회</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Canvas Confetti for interactions -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState(null);
-  const [expandedFaq, setExpandedFaq] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    <!-- Google Fonts: Inter & Jua (귀여운 느낌의 폰트 추가) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Jua&display=swap" rel="stylesheet">
 
-  const targets = [
-    {
-      title: "의약학/간호 계열 지망생",
-      desc: "의대, 약대, 간호대 등 보건 의료 계열 진학을 목표로 하는 학생에게는 선택이 아닌 필수! 2028학년도 대입부터 의학, 약학 분야 핵심 권장 과목으로 지정되었습니다.",
-      icon: <HeartPulse className="w-8 h-8 text-rose-400" />
-    },
-    {
-      title: "생명공학/화학 관련 학과 지망생",
-      desc: "생명과학, 생명공학, 화장품공학, 식품영양학과 등에서 다루는 생화학의 기초를 탄탄하게 다질 수 있습니다.",
-      icon: <Microscope className="w-8 h-8 text-blue-400" />
-    },
-    {
-      title: "수능 전, 생명과학 기초를 다지고 싶은 학생",
-      desc: "기존 '생명과학Ⅱ'에서 가장 핵심적이고 재미있는 '세포'와 '물질대사' 부분만 쏙쏙 뽑아 만든 과목이라 내용이 상대적으로 쉽고 재미있습니다.",
-      icon: <Zap className="w-8 h-8 text-yellow-400" />
-    }
-  ];
-
-  const syllabus = [
-    {
-      title: "1. 세포의 모든 것",
-      items: ["탄수화물, 지질, 단백질, 핵산의 비밀", "동물세포 vs 식물세포, 누가 더 쎌까?", "세포막을 통과하는 물질들의 눈치 게임"]
-    },
-    {
-      title: "2. 물질대사와 에너지",
-      items: ["내 몸의 에너지 화폐, ATP", "내가 왜 살찔까? 대사성 질환 파헤치기", "없으면 다 죽는 마법의 단백질 '효소'"]
-    },
-    {
-      title: "3. 세포호흡과 광합성",
-      items: ["에너지 발전소 미토콘드리아", "태양광을 에너지로! 엽록체", "산소호흡 vs 발효, 알코올은 어떻게 만들어질까?"]
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans sm:pb-20 pb-0 overflow-x-hidden">
-      
-      {/* Mobile Navbar / Header */}
-      <nav className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 p-4 flex justify-center items-center">
-        <div className="flex items-center gap-2 font-bold text-teal-400 text-xl tracking-tight">
-          <Dna className="w-6 h-6" />
-          <span>과목선택 가이드</span>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <header className="relative px-6 pt-16 pb-20 text-center flex flex-col items-center">
-        <div className="absolute top-20 -left-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            margin: 0;
+            overflow: hidden; 
+        }
         
-        <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-teal-500/10 text-teal-300 font-bold text-xs mb-6 border border-teal-500/20 shadow-[0_0_15px_rgba(20,184,166,0.15)]">
-          <Activity size={14} /> 2022 개정 교육과정 진로선택 과목
-        </span>
+        .font-jua {
+            font-family: 'Jua', sans-serif;
+        }
+
+        /* 세로 스크롤 스냅 컨테이너 */
+        .snap-container {
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;       
+            overflow-x: hidden;
+            scroll-snap-type: y mandatory; 
+            -webkit-overflow-scrolling: touch;
+            height: 100dvh; 
+            width: 100vw;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .snap-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 개별 페이지 단위 설정 */
+        .page-section {
+            flex: 0 0 100dvh;
+            width: 100vw;
+            height: 100dvh;
+            scroll-snap-align: start; 
+            overflow-y: hidden; 
+            padding: 1.5rem;
+            padding-bottom: 5rem; 
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Glassmorphism 효과 */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
         
-        <h1 className="text-4xl sm:text-6xl font-extrabold mb-4 leading-tight tracking-tighter">
-          세포와 <br className="sm:hidden"/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-400">물질대사</span>
-        </h1>
-        
-        <p className="text-lg sm:text-xl text-slate-400 mb-10 font-light max-w-md mx-auto leading-relaxed">
-          내 몸속 초소형 공장 견학하기!<br/> 숨 쉬고 밥 먹는 당신, 이미 수강할 자격은 충분합니다.
-        </p>
-        
-        {/* Interactive Interactive CTA */}
-        <button 
-          className="group relative w-full sm:w-auto bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-lg shadow-teal-500/25 transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden"
-          onClick={() => document.getElementById('target-section').scrollIntoView({ behavior: 'smooth' })}
-        >
-          <span className="relative z-10 flex items-center gap-2">나도 들어야 할까? 확인하기 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform"/></span>
-          <div className="absolute inset-0 bg-white/20 translate-y-full group-active:translate-y-0 transition-transform duration-200 ease-out"></div>
+        /* 터치 가능한 패널의 클릭 피드백 */
+        .glass-panel.clickable:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 둥둥 떠다니는 애니메이션 */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        /* 흔들리는 효과 (상호작용용) */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-5deg); }
+            75% { transform: translateX(5px) rotate(5deg); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+
+        /* 반짝이는 효과 */
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.8)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 25px rgba(250, 204, 21, 1)); transform: scale(1.1); }
+        }
+        .animate-glow { animation: glow 2s ease-in-out infinite; }
+
+        /* 스크롤 유도 아이콘 애니메이션 */
+        @keyframes swipeHint {
+            0% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(10px); opacity: 1; }
+            100% { transform: translateY(0); opacity: 0.5; }
+        }
+        .swipe-icon { animation: swipeHint 1.5s infinite; }
+
+        /* 배경 그라데이션 */
+        .bg-intro { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); }
+        .bg-cell { background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); }
+        .bg-meta { background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%); }
+        .bg-photo { background: linear-gradient(135deg, #14532d 0%, #052e16 100%); }
+        .bg-career { background: linear-gradient(135deg, #1e40af 0%, #172554 100%); }
+        .bg-why { background: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%); }
+        .bg-qa { background: linear-gradient(135deg, #0f172a 0%, #020617 100%); }
+        .bg-outro { background: linear-gradient(135deg, #831843 0%, #4c0519 100%); }
+
+        /* 토스트 알림 (alert 대체) */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast-msg {
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOut 0.3s ease-in 2s forwards;
+        }
+        @keyframes popIn { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <!-- 커스텀 토스트 알림창 컨테이너 -->
+    <div id="toast-container"></div>
+
+    <!-- 이전/다음 페이지 이동 플로팅 버튼 -->
+    <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+        <button id="prevBtn" onclick="scrollToPrev()" class="w-12 h-12 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all duration-300 opacity-0 pointer-events-none hover:bg-white/30 active:scale-90">
+            <i class="fas fa-chevron-up"></i>
         </button>
-      </header>
-
-      {/* Target Section (Interactive Tabs) */}
-      <section id="target-section" className="px-5 py-12 scroll-mt-20">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-2">
-          <UserCheck className="text-teal-400" /> 이런 학생에게 추천해요!
-        </h2>
-        <p className="text-slate-400 mb-8 text-sm">카드를 터치해서 자세한 내용을 확인해보세요.</p>
-        
-        <div className="space-y-4">
-          {targets.map((target, idx) => (
-            <div 
-              key={idx}
-              onClick={() => setActiveTab(activeTab === idx ? null : idx)}
-              className={`bg-slate-800 border ${activeTab === idx ? 'border-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.15)]' : 'border-slate-700'} rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer`}
-            >
-              <div className="p-5 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className={`p-2 rounded-xl ${activeTab === idx ? 'bg-slate-900' : 'bg-slate-900/50'}`}>
-                    {target.icon}
-                  </div>
-                  <h3 className={`font-bold text-lg ${activeTab === idx ? 'text-teal-300' : 'text-slate-200'}`}>
-                    {target.title}
-                  </h3>
-                </div>
-                <ChevronDown className={`text-slate-500 transition-transform duration-300 ${activeTab === idx ? 'rotate-180 text-teal-400' : ''}`} />
-              </div>
-              
-              <div className={`px-5 overflow-hidden transition-all duration-300 ease-in-out ${activeTab === idx ? 'max-h-40 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="pt-2 border-t border-slate-700/50 text-slate-300 text-sm leading-relaxed">
-                  {target.desc}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Syllabus Section */}
-      <section className="px-5 py-12 bg-slate-800/50">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center gap-2">
-          <BookOpen className="text-blue-400" /> 무엇을 배우나요?
-        </h2>
-        
-        <div className="grid sm:grid-cols-3 gap-4">
-          {syllabus.map((unit, idx) => (
-            <div key={idx} className="bg-slate-900 p-6 rounded-3xl border border-slate-700/50">
-              <h3 className="font-bold text-xl text-teal-300 mb-4">{unit.title}</h3>
-              <ul className="space-y-3">
-                {unit.items.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <CheckCircle2 size={16} className="text-slate-500 shrink-0 mt-0.5" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Sengkibu Hook */}
-      <section className="px-5 py-16 relative">
-        <div className="bg-gradient-to-br from-teal-900/40 to-blue-900/40 rounded-3xl p-6 sm:p-10 border border-teal-500/20 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-2xl rounded-full"></div>
-          
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">생기부 프리패스 치트키 🚀</h2>
-          <p className="text-slate-300 text-sm sm:text-base mb-6 leading-relaxed">
-            단순 암기 과목이 아닙니다. 이 과목은 실험 데이터 분석과 탐구를 중시합니다.<br className="hidden sm:block"/>
-            수행평가나 발표를 통해 자신의 진로와 연계된 깊이 있는 세특을 남기기 가장 좋은 과목입니다.
-          </p>
-          
-          <div className="bg-slate-900/80 rounded-2xl p-5 space-y-4 text-sm">
-            <div className="flex gap-3">
-              <ThumbsUp className="text-teal-400 shrink-0" size={20} />
-              <p><strong className="text-slate-200">의약학 지망생:</strong> '효소의 작용 기작'을 활용해 특정 질병의 치료제 개발 원리 보고서 작성 가능</p>
-            </div>
-            <div className="flex gap-3">
-              <ThumbsUp className="text-teal-400 shrink-0" size={20} />
-              <p><strong className="text-slate-200">식품영양 지망생:</strong> '세포호흡과 발효' 단원을 연계하여 발효 식품의 원리 및 유용성 탐구 가능</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Accordion */}
-      <section className="px-5 pb-20">
-        <h2 className="text-2xl font-bold mb-6 text-center">자주 묻는 질문</h2>
-        <div className="space-y-3">
-          {[
-            { q: "내용이 너무 어렵지 않나요?", a: "기존 생명과학2에서 어렵고 복잡한 계산 문제 위주였던 유전 파트가 빠졌습니다! 암기보다는 원리 이해와 실생활 사례 중심이라 훨씬 재미있게 접근할 수 있습니다." },
-            { q: "수능 과목에 들어가나요?", a: "2028 수능 개편안에 따르면 탐구 영역은 통합과학으로 치러지므로 수능 직접 출제 범위는 아닙니다. 하지만 대학 내신 반영 및 전공 적합성 평가(교과 평가)에서 매우 중요하게 작용합니다." }
-          ].map((faq, idx) => (
-             <div 
-             key={idx}
-             onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
-             className="bg-slate-800 rounded-2xl p-4 cursor-pointer"
-           >
-             <div className="flex justify-between items-center font-bold text-sm">
-               <span>Q. {faq.q}</span>
-               <ChevronDown className={`text-slate-400 transition-transform ${expandedFaq === idx ? 'rotate-180' : ''}`} size={18}/>
-             </div>
-             {expandedFaq === idx && (
-               <div className="mt-3 pt-3 border-t border-slate-700 text-sm text-slate-400 leading-relaxed">
-                 A. {faq.a}
-               </div>
-             )}
-           </div>
-          ))}
-        </div>
-      </section>
-
-      {}
-      {/* Final CTA / Footer */}
-      <footer className="relative bg-slate-950 px-6 py-20 mt-10 text-center overflow-hidden border-t border-slate-800">
-        {/* 배경 은은한 빛 효과 */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[400px] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
-
-        <h2 className="text-3xl sm:text-5xl font-extrabold mb-6 relative z-10 tracking-tight">
-          생명과학의 진짜 재미는<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-400">세포 속</span>에서 시작됩니다.
-        </h2>
-        
-        <p className="text-slate-400 mb-10 text-base sm:text-lg relative z-10">
-          지금 바로 수강 신청하고 내 몸속 우주를 탐험하세요!
-        </p>
-
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="group relative z-10 inline-flex items-center gap-3 bg-white text-slate-900 font-bold text-lg sm:text-xl py-4 px-10 rounded-full hover:bg-teal-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(20,184,166,0.6)] transform hover:-translate-y-1 active:scale-95"
-        >
-          망설이지 말고 선택하기 <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
+        <button id="nextBtn" onclick="scrollToNext()" class="w-12 h-12 flex items-center justify-center bg-white/20 backdrop-blur-md rounded-full border border-white/30 text-white shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-white/30 active:scale-90">
+            <i class="fas fa-chevron-down text-lg"></i>
         </button>
-
-        <p className="mt-12 text-slate-500 text-xs sm:text-sm relative z-10 leading-relaxed">
-          * 주의사항 : 밥 먹을 때마다 침 속의 아밀레이스가 신경 쓰일 수 있음. <br className="hidden sm:block"/>
-          (근손실 걱정하는 친구에게 이 과목을 적극 추천 요망)
-        </p>
-      </footer>
-
-      {/* Custom Modal (Popup) */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="relative bg-slate-800 border border-teal-500/50 p-8 rounded-3xl shadow-[0_0_40px_rgba(20,184,166,0.3)] max-w-sm w-full text-center transform transition-all animate-in zoom-in-95 duration-200">
-            <button 
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
-            >
-              <X size={24} />
-            </button>
-            <div className="mb-6 inline-flex p-4 bg-teal-500/20 rounded-full text-teal-400">
-              <HeartPulse size={40} className="animate-pulse" />
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold mb-4 leading-relaxed">
-              #문의는 3층 별관 융합과학부<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-400 text-3xl">초미녀현진쌤</span>에게 👩‍🏫✨
-            </h3>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="w-full bg-teal-500 hover:bg-teal-400 text-slate-900 font-bold py-3 px-6 rounded-xl transition-colors mt-4"
-            >
-              확인했습니다!
-            </button>
-          </div>
-        </div>
-      )}
-
     </div>
-  );
-}
+
+    <main class="snap-container" id="mainContainer">
+
+        <!-- ========================================== -->
+        <!-- Page 1: 메인 화면 (Hook & Intro) -->
+        <!-- ========================================== -->
+        <section class="page-section bg-intro justify-center text-center">
+            <div class="flex justify-center items-end space-x-4 mb-6 relative">
+                <!-- 터치 인터랙션: 클릭 시 이모지 변경 및 토스트 메시지 -->
+                <div id="hero-emoji" onclick="pokeHero()" class="text-6xl animate-float cursor-pointer transition-transform active:scale-75" style="animation-delay: 0s;">
+                    😩<br><span class="text-xs text-gray-300 font-bold bg-black/40 px-2 rounded-full py-1">나 (터치해봐)</span>
+                </div>
+                <div class="text-8xl animate-float pointer-events-none" style="animation-delay: 0.5s;">
+                    💪🔥<br><span class="text-sm text-yellow-300 font-bold">내 안의 세포</span>
+                </div>
+            </div>
+            
+            <h1 class="text-3xl font-extrabold mb-5 leading-tight break-keep font-jua">
+                <span class="text-indigo-300">매일 카페인 수혈로 버티는 너,</span><br>
+                혹시 네 안의 세포가<br>파업 중은 아닐까? 🚨
+            </h1>
+            
+            <div class="glass-panel p-5 text-left mb-6">
+                <p class="text-gray-200 mb-3 leading-relaxed text-sm">
+                    우리가 멍 때리고, 자고, 숨만 쉬어도! 우리 몸속에서는 초 단위로 어마어마한 스펙터클 블록버스터가 펼쳐지고 있습니다.
+                </p>
+                <p class="text-gray-200 leading-relaxed text-sm">
+                    <strong class="text-yellow-300">'세포와 물질대사'</strong> 과목은 내 몸을 움직이는 에너지의 비밀을 파헤칩니다. "대체 왜 난 늘 피곤한가?"에 대한 해답을 찾으며 몸속 우주를 탐험해 보세요! 🚀
+                </p>
+            </div>
+
+            <div class="mt-auto pb-4 flex flex-col items-center text-gray-400">
+                <span class="text-sm mb-2 font-bold animate-pulse text-indigo-300">스크롤해서 세포 깨우기</span>
+                <i class="fas fa-chevron-down swipe-icon text-3xl text-indigo-200"></i>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- Page 2: Chapter 1. 세포 (Cells) -->
+        <!-- ========================================== -->
+        <section class="page-section bg-cell">
+            <div class="flex items-center space-x-3 mb-5 mt-4">
+                <span class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded">Chapter 1</span>
+                <h2 class="text-2xl font-bold text-emerald-100 font-jua">내 몸속 37조 개의 공장 🏭</h2>
+            </div>
+
+            <div class="glass-panel p-4 mb-4">
+                <h3 class="text-lg font-bold mb-2 text-white"><i class="fas fa-microscope text-emerald-300 mr-2"></i>우리는 무엇으로 만들어졌을까?</h3>
+                <p class="text-emerald-100/90 text-sm leading-relaxed">
+                    탄단지(탄수화물, 단백질, 지질)! 이름만 들어도 군침 싹 도는 영양소들이 내 몸의 뼈대가 됩니다.
+                </p>
+            </div>
+
+            <h4 class="font-bold text-emerald-300 mb-2 px-2">👇 아래 소기관들을 터치해서 일 시키기!</h4>
+            
+            <div class="space-y-3">
+                <!-- 터치 인터랙션: 각 세포 소기관 클릭 시 재치있는 멘트 출력 -->
+                <div onclick="showToast('단백질 뚝딱뚝딱! 오늘 물량 다 뺐습니다 보스! 🛠️')" class="glass-panel clickable p-4 flex items-center space-x-4">
+                    <div class="text-3xl">🖨️</div>
+                    <div>
+                        <h4 class="font-bold text-white mb-1">리보솜</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">단백질을 찍어내는 3D 프린터</p>
+                    </div>
+                </div>
+                
+                <div onclick="showToast('로켓배송 출발합니다! 택배요~! 📦💨')" class="glass-panel clickable p-4 flex items-center space-x-4">
+                    <div class="text-3xl">🚚</div>
+                    <div>
+                        <h4 class="font-bold text-white mb-1">골지체</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">세포계의 쿠팡맨, 포장과 배송 담당</p>
+                    </div>
+                </div>
+
+                <div onclick="showToast('야근수당도 없이 24시간 풀가동 중입니다... 살려주세요 ⚡🔥')" class="glass-panel clickable p-4 flex items-center space-x-4 border border-yellow-500/50 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-16 h-16 bg-yellow-500/20 blur-xl rounded-full animate-pulse"></div>
+                    <div class="text-3xl animate-glow">🔋</div>
+                    <div class="z-10">
+                        <h4 class="font-bold text-yellow-300 mb-1">마이토콘드리아</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">불철주야 에너지를 생산하는 세포계의 발전소</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-6 flex justify-center text-emerald-400/50">
+                <i class="fas fa-chevron-down swipe-icon text-2xl"></i>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- Page 3: Chapter 2. 물질대사와 에너지 -->
+        <!-- ========================================== -->
+        <section class="page-section bg-meta">
+            <div class="flex items-center space-x-3 mb-5 mt-4">
+                <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">Chapter 2</span>
+                <h2 class="text-2xl font-bold text-red-100 font-jua">다이어트 실패는 '효소' 탓? 🔑</h2>
+            </div>
+
+            <!-- 터치 인터랙션: 미니 게임 스타일 - 햄버거를 여러 번 눌러 에너지로 변환 -->
+            <div class="bg-black/30 rounded-2xl p-4 mb-6 border border-red-500/30 text-center">
+                <p class="text-xs text-red-300 mb-2 font-bold">👇 햄버거를 미친듯이 터치해서 소화시켜봐!</p>
+                <div class="flex justify-center items-center space-x-6 text-5xl h-20">
+                    <div id="burger-btn" onclick="digestBurger()" class="cursor-pointer transition-transform active:scale-75 hover:scale-110">🍔</div>
+                    <i class="fas fa-arrow-right text-3xl text-red-400 opacity-50"></i>
+                    <div id="atp-result" class="opacity-30 grayscale transition-all duration-500 transform scale-75">⚡</div>
+                </div>
+                <div id="burger-hp-bar" class="w-1/2 h-2 bg-gray-700 rounded-full mx-auto mt-3 overflow-hidden">
+                    <div id="burger-hp" class="h-full bg-red-500 w-full transition-all duration-200"></div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-5 mb-4">
+                <h3 class="text-lg font-bold mb-2 text-white">왜 숨만 쉬어도 살이 찔까? 😭</h3>
+                <p class="text-red-100/80 text-sm leading-relaxed">
+                    생명체 안에서 생명을 유지하기 위해 끊임없이 일어나는 화학 반응인 <strong>'물질대사'</strong> 때문! 내 억울한 체질의 비밀을 파헤칩니다.
+                </p>
+            </div>
+
+            <div class="glass-panel p-5 mb-4">
+                <h3 class="text-lg font-bold mb-2 text-white">체온 36.5도에서 내 몸이 안 타는 이유!</h3>
+                <p class="text-red-100/80 text-sm leading-relaxed">
+                    포도당을 몸 밖에서 태우려면 400도 이상의 고온이 필요해요. 하지만 우리 몸의 마법사 <strong>'효소(Enzyme)'</strong>가 활성화에너지를 낮춰주어 안전하게 에너지를 얻습니다. 효소 없었으면 우린 다 타버렸을지도 몰라요 🔥
+                </p>
+            </div>
+
+            <div class="mt-auto pt-4 flex justify-center text-red-400/50">
+                <i class="fas fa-chevron-down swipe-icon text-2xl"></i>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- Page 4: Chapter 3. 세포호흡과 광합성 -->
+        <!-- ========================================== -->
+        <section class="page-section bg-photo">
+            <div class="flex items-center space-x-3 mb-6 mt-4">
+                <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">Chapter 3</span>
+                <h2 class="text-2xl font-bold text-green-100 break-keep font-jua">빛으로 밥을 짓는 마법 🌿</h2>
+            </div>
+
+            <div class="space-y-4">
+                <div class="glass-panel p-4 rounded-2xl flex items-start space-x-4">
+                    <div class="text-4xl">☀️</div>
+                    <div>
+                        <h3 class="font-bold text-green-300 mb-1">우리는 식물에게 빚을 지고 산다</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            식물은 광합성(명반응/탄소 고정)을 통해 빛에너지를 화학 에너지(포도당)로 바꿉니다. 식물 덕분에 우리가 먹고삽니다. 압도적 감사! 🙏
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl flex items-start space-x-4">
+                    <div class="text-4xl animate-pulse">💸</div>
+                    <div>
+                        <h3 class="font-bold text-green-300 mb-1">궁극의 에너지 화폐, ATP!</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            마이토콘드리아는 우리가 먹은 유기물을 분해해 'ATP'라는 코인(에너지)을 채굴합니다. 내 몸속 가상화폐 거래소!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl flex items-start space-x-4">
+                    <div class="text-4xl">🍞</div>
+                    <div>
+                        <h3 class="font-bold text-green-300 mb-1">산소가 없어도 살아남는 법, 발효</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            미생물들이 숨 막히는 환경에서 살아남으려 꼼수를 부린 결과! 알코올/젖산발효 덕에 우리가 맛있는 빵과 김치를 먹습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-4 flex justify-center text-green-400/50">
+                <i class="fas fa-chevron-down swipe-icon text-2xl"></i>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- Page 5: 진로연계 (Career) -->
+        <!-- ========================================== -->
+        <section class="page-section bg-career">
+            <h2 class="text-3xl font-extrabold text-center text-blue-200 mb-6 mt-4 font-jua">
+                이 과목, 내 꿈과<br>무슨 상관일까? 🎯
+            </h2>
+
+            <!-- 터치 인터랙션: 직업 룰렛 -->
+            <div class="bg-black/40 rounded-2xl p-5 mb-6 text-center border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                <h3 class="text-blue-300 font-bold mb-3 text-sm">운명의 돌림판! 나와 어울리는 진로는?</h3>
+                <div id="roulette-result" class="text-2xl font-bold text-white h-10 flex items-center justify-center mb-4 transition-all">
+                    ❓ 터치해서 뽑기 ❓
+                </div>
+                <button onclick="spinRoulette()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-full transition-transform active:scale-95 shadow-lg">
+                    내 적성 뽑기 🎲
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 overflow-y-auto max-h-[40vh] pr-1 pb-2">
+                <div class="glass-panel p-4 relative overflow-hidden">
+                    <div class="absolute -right-2 -bottom-2 text-5xl opacity-20">🧬</div>
+                    <h3 class="font-bold text-lg text-blue-300 mb-1">바이오 & 의약학</h3>
+                    <p class="text-xs text-blue-100/80 leading-relaxed">
+                        세포를 연구해 불치병을 고치는 <strong>'세포치료제 연구원'</strong>의 꿈을 키웁니다. 내가 만든 약으로 세상을 구한다!
+                    </p>
+                </div>
+
+                <div class="glass-panel p-4 relative overflow-hidden">
+                    <div class="absolute -right-2 -bottom-2 text-5xl opacity-20">🩺</div>
+                    <h3 class="font-bold text-lg text-blue-300 mb-1">보건 & 헬스케어</h3>
+                    <p class="text-xs text-blue-100/80 leading-relaxed">
+                        식단과 운동을 처방하는 <strong>'헬스 케어 컨설턴트'</strong>. 최소한 내 건강과 뱃살은 내가 직접 지킬 수 있습니다.
+                    </p>
+                </div>
+
+                <div class="glass-panel p-4 relative overflow-hidden">
+                    <div class="absolute -right-2 -bottom-2 text-5xl opacity-20">🌱</div>
+                    <h3 class="font-bold text-lg text-blue-300 mb-1">미래 농업 & 융합</h3>
+                    <p class="text-xs text-blue-100/80 leading-relaxed">
+                        ICT 기술을 접목한 <strong>'스마트팜 CEO'</strong>. 넥타이 매고 농사짓는 힙한 사장님이 되어볼까요?
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-2 flex justify-center text-blue-400/50">
+                <i class="fas fa-chevron-down swipe-icon text-2xl"></i>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- Page 6: 과목을 들으면 좋은 이유 -->
+        <!-- ========================================== -->
+        <section class="page-section bg-why flex flex-col justify-center text-center">
+            
+            <h2 class="text-2xl font-bold text-purple-200 mb-8 break-keep font-jua mt-6">
+                &lt;세포와 물질대사&gt;<br>픽(Pick)해야 하는 꿀이유 3가지! 👍
+            </h2>
+
+            <div class="space-y-6 text-left mb-auto px-2">
+                <div class="flex items-start space-x-4">
+                    <div class="bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-black flex-shrink-0 text-xl shadow-lg transform -rotate-12">1</div>
+                    <div>
+                        <h4 class="font-bold text-purple-300 text-lg">생기부 치트키: 이공계 프리패스 역량 🎓</h4>
+                        <p class="text-sm text-purple-100/80 mt-1 leading-relaxed">단순 암기 극혐! 스스로 가설을 세우고 실험하며 이공계 대학이 가장 사랑하는 탐구 역량을 빵빵하게 채워줍니다.</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-4">
+                    <div class="bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-black flex-shrink-0 text-xl shadow-lg transform rotate-6">2</div>
+                    <div>
+                        <h4 class="font-bold text-purple-300 text-lg">합법적 딴짓? 최첨단 스마트 수업 💻</h4>
+                        <p class="text-sm text-purple-100/80 mt-1 leading-relaxed">지루한 칠판 수업은 가라! VR/AR 자료, 센서 활용 측정 등 트렌디한 디지털 기기를 만지며 수업을 즐깁니다.</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-4">
+                    <div class="bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-black flex-shrink-0 text-xl shadow-lg transform -rotate-6">3</div>
+                    <div>
+                        <h4 class="font-bold text-purple-300 text-lg">유식한 핑계 생성: '진짜' 생명과학 🍞</h4>
+                        <p class="text-sm text-purple-100/80 mt-1 leading-relaxed">"내가 살찌는 건 물질대사 탓이야." 등 일상생활의 문제들을 과학적으로 해명(?)할 수 있는 즐거움!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-4 flex justify-center text-purple-400/50">
+                <i class="fas fa-chevron-down swipe-icon text-2xl"></i>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- Page 7: Q&A -->
+        <!-- ========================================== -->
+        <section class="page-section bg-qa">
+            <h2 class="text-2xl font-extrabold text-blue-300 mb-6 flex items-center font-jua pt-4">
+                <i class="fas fa-bullhorn mr-3 text-yellow-400 animate-shake"></i> 팩트폭력 Q&A
+            </h2>
+
+            <div class="space-y-3 overflow-y-auto pb-8 pr-1" style="max-height: 75vh;">
+                <!-- Q1 (가장 중요: 2022 교육과정 평가 방식 & 장점) -->
+                <div class="glass-panel overflow-hidden border border-yellow-500/50 shadow-[0_0_10px_rgba(250,204,21,0.2)]">
+                    <button onclick="toggleQA(1)" class="w-full text-left p-4 font-bold flex justify-between items-center text-yellow-300">
+                        <span class="pr-4">🔥 Q. 솔직히... 내신 따기 빡센가요?</span>
+                        <i id="icon-1" class="fas fa-chevron-down text-sm transition-transform duration-300 flex-shrink-0"></i>
+                    </button>
+                    <div id="ans-1" class="hidden p-4 pt-0 text-sm text-gray-300 border-t border-white/10 bg-black/40 leading-relaxed">
+                        이 과목은 2022 개정 교육과정에 따라 <strong>1~5등급(상대평가)</strong>과 <strong>A~E(절대평가)</strong>가 함께 산출됩니다! <br><br>
+                        "헉, 상대평가라니?!" 하고 쫄지 마세요. 생명과학 계열은 이과생들의 '근본'이라 <strong>수강 선택자 수가 압도적으로 많습니다.</strong> 즉, 1~2등급을 받을 수 있는 파이(인원수) 자체가 넉넉하다는 뜻이죠! 남들 다 듣는 꿀과목, 혼자 안 들으면 손해겠죠? 😉
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="glass-panel overflow-hidden">
+                    <button onclick="toggleQA(2)" class="w-full text-left p-4 font-bold flex justify-between items-center text-gray-200">
+                        <span class="pr-4">🤔 Q. 문과 성향 노베이스, 생존 가능?</span>
+                        <i id="icon-2" class="fas fa-chevron-down text-sm transition-transform duration-300 flex-shrink-0"></i>
+                    </button>
+                    <div id="ans-2" class="hidden p-4 pt-0 text-sm text-gray-400 border-t border-white/10 bg-black/20 leading-relaxed">
+                        중학교 '식물과 에너지', 고1 '통합과학' 때 아예 눈 감고 잔 게 아니라면 생존 가능! 혹시 잤더라도 현진쌤이 심폐소생술로 하드캐리 해드립니다. (단, 본인의 의지는 지참할 것)
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="glass-panel overflow-hidden">
+                    <button onclick="toggleQA(3)" class="w-full text-left p-4 font-bold flex justify-between items-center text-gray-200">
+                        <span class="pr-4">🤔 Q. 칠판만 보는 수면제 수업인가요?</span>
+                        <i id="icon-3" class="fas fa-chevron-down text-sm transition-transform duration-300 flex-shrink-0"></i>
+                    </button>
+                    <div id="ans-3" class="hidden p-4 pt-0 text-sm text-gray-400 border-t border-white/10 bg-black/20 leading-relaxed">
+                        놉! 이 과목은 <strong>탐구와 실험이 꽃</strong>입니다 🌸. 간이 원심분리기 붕붕 돌리기, 콩 발아시키기, 색소 분리하기 등 엉덩이 들썩거리는 꿀잼 활동이 가득해요. 잠잘 틈이 없습니다!
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="glass-panel overflow-hidden">
+                    <button onclick="toggleQA(4)" class="w-full text-left p-4 font-bold flex justify-between items-center text-gray-200">
+                        <span class="pr-4">🤔 Q. 나중에 제 인생에 무슨 도움이 되죠?</span>
+                        <i id="icon-4" class="fas fa-chevron-down text-sm transition-transform duration-300 flex-shrink-0"></i>
+                    </button>
+                    <div id="ans-4" class="hidden p-4 pt-0 text-sm text-gray-400 border-t border-white/10 bg-black/20 leading-relaxed">
+                        바이오 연구원이나 의학 계열은 물론, 스마트팜 CEO, 헬스케어 앱 개발자 등 무궁무진합니다! 최소한 어디 가서 "나트륨 너무 먹어서 삼투압 때문에 몸 붓는다"며 유식하게 핑계를 댈 수 있는 스킬을 얻습니다.
+                    </div>
+                </div>
+
+                <!-- Q5 (Humor) -->
+                <div class="glass-panel overflow-hidden border border-pink-500/50">
+                    <button onclick="toggleQA(5)" class="w-full text-left p-4 font-bold flex justify-between items-center text-pink-300">
+                        <span class="pr-4">😍 Q. 쌤 예쁘신가요? (내신보다 중요함)</span>
+                        <i id="icon-5" class="fas fa-chevron-down text-sm transition-transform duration-300 flex-shrink-0"></i>
+                    </button>
+                    <div id="ans-5" class="hidden p-4 pt-0 text-sm text-pink-100 border-t border-white/10 bg-pink-900/40 leading-relaxed">
+                        네. 아주 심각하게 예쁩니다. (단호) <br>과장광고인지 아닌지 팩트 체크하러 꼭 오세요. 허위매물 절대 아님. 😎
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-2 flex justify-center text-slate-500 pb-4">
+                <i class="fas fa-chevron-down swipe-icon text-2xl"></i>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- Page 8: Outro -->
+        <!-- ========================================== -->
+        <section class="page-section bg-outro text-center flex flex-col justify-center items-center">
+            
+            <div class="text-6xl mb-6 animate-pulse">✨👩‍🔬✨</div>
+
+            <h2 class="text-2xl font-bold mb-4 text-white leading-relaxed break-keep font-jua">
+                "내 몸을 이해하는 것이 곧<br>세상을 이해하는 첫걸음!"
+            </h2>
+
+            <p class="text-pink-100/80 mb-8 leading-relaxed text-sm px-4">
+                단순히 지식을 외우는 과목이 아닙니다.<br>
+                나와 우리 주변의 생명 현상에 숨겨진 놀라운 비밀을 함께 파헤쳐 볼 미래의 융합 인재들을 기다립니다! 🧬
+            </p>
+
+            <div class="bg-black/40 p-5 rounded-2xl border border-pink-400/50 w-full mb-8 shadow-lg">
+                <h3 class="text-yellow-300 font-bold text-lg mb-2 animate-pulse">🔥 수강신청 기간 엄수! 🔥</h3>
+                <p class="text-sm text-gray-200">
+                    신청 안 하면 네 안의 세포들이 섭섭해서 광광 우럭 😭<br>미리미리 신청하고 광명 찾자!
+                </p>
+            </div>
+
+            <!-- 최종 결심 버튼! -->
+            <button onclick="triggerConfetti(this)" class="bg-gradient-to-r from-yellow-400 to-yellow-300 text-purple-900 font-extrabold py-5 px-10 rounded-full shadow-[0_0_25px_rgba(250,204,21,0.6)] transform transition active:scale-90 hover:scale-105 text-xl mx-auto z-10 relative mb-8 border-2 border-yellow-200">
+                이 과목 선택할 결심! 터치 👆
+            </button>
+
+            <div class="flex flex-wrap justify-center gap-2 mt-auto pb-4 z-10 relative">
+                <span class="bg-pink-900/80 text-pink-200 text-xs px-3 py-1.5 rounded-full font-bold border border-pink-500/30">#초미녀현진쌤</span>
+                <span class="bg-indigo-900/80 text-indigo-200 text-xs px-3 py-1.5 rounded-full font-bold border border-indigo-500/30">#문의는_3층_별관</span>
+                <span class="bg-emerald-900/80 text-emerald-200 text-xs px-3 py-1.5 rounded-full font-bold border border-emerald-500/30">#융합과학부</span>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        // 토스트 알림창 함수 (alert 대체)
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.innerText = message;
+            container.appendChild(toast);
+
+            // 2.3초 후 DOM에서 제거
+            setTimeout(() => {
+                if(container.contains(toast)) {
+                    container.removeChild(toast);
+                }
+            }, 2300);
+        }
+
+        // Navigation & Scroll Logic
+        const mainContainer = document.getElementById('mainContainer');
+        const sections = document.querySelectorAll('.page-section');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentIndex = 0;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    currentIndex = Array.from(sections).indexOf(entry.target);
+                    updateButtons();
+                }
+            });
+        }, { threshold: 0.5, root: mainContainer });
+
+        sections.forEach(sec => observer.observe(sec));
+
+        function updateButtons() {
+            if (currentIndex === 0) {
+                prevBtn.classList.add('opacity-0', 'pointer-events-none');
+                prevBtn.classList.remove('opacity-100');
+            } else {
+                prevBtn.classList.remove('opacity-0', 'pointer-events-none');
+                prevBtn.classList.add('opacity-100');
+            }
+
+            if (currentIndex === sections.length - 1) {
+                nextBtn.classList.add('opacity-0', 'pointer-events-none');
+                nextBtn.classList.remove('opacity-100');
+            } else {
+                nextBtn.classList.remove('opacity-0', 'pointer-events-none');
+                nextBtn.classList.add('opacity-100');
+            }
+        }
+
+        function scrollToNext() {
+            if (currentIndex < sections.length - 1) {
+                sections[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function scrollToPrev() {
+            if (currentIndex > 0) {
+                sections[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Accordion Toggle Logic
+        function toggleQA(id) {
+            // 1. 클릭한 질문 외에 열려있는 다른 답변들을 모두 찾아서 닫음
+            for (let i = 1; i <= 5; i++) {
+                if (i !== id) {
+                    const otherAns = document.getElementById(`ans-${i}`);
+                    const otherIcon = document.getElementById(`icon-${i}`);
+                    if (otherAns && !otherAns.classList.contains('hidden')) {
+                        otherAns.classList.add('hidden');
+                        otherIcon.style.transform = 'rotate(0deg)';
+                    }
+                }
+            }
+
+            // 2. 클릭한 질문의 상태 토글 (열기/닫기)
+            const ans = document.getElementById(`ans-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            
+            if (ans.classList.contains('hidden')) {
+                ans.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+                // 아코디언 열 때 꿀잼 토스트 
+                if(id === 1) showToast("1등급은 내 차지! 🏆");
+                if(id === 5) showToast("진짜라니까요? 😤");
+            } else {
+                ans.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // --- 상호작용 인터랙션 로직 ---
+
+        // 1페이지: 이모지 터치
+        let pokeCount = 0;
+        function pokeHero() {
+            pokeCount++;
+            const emojiDiv = document.getElementById('hero-emoji');
+            if(pokeCount === 1) {
+                emojiDiv.innerHTML = `😲<br><span class="text-xs text-white font-bold bg-indigo-500 px-2 rounded-full py-1">어? 좀 깨는데?</span>`;
+                showToast("세포가 자극을 받았습니다! ⚡");
+            } else if (pokeCount === 2) {
+                emojiDiv.innerHTML = `🤩<br><span class="text-xs text-white font-bold bg-pink-500 px-2 rounded-full py-1">완전 쌩쌩함!</span>`;
+                showToast("에너지 100% 충전 완료! 🔋");
+            } else {
+                emojiDiv.innerHTML = `😩<br><span class="text-xs text-gray-300 font-bold bg-black/40 px-2 rounded-full py-1">다시 피곤..</span>`;
+                showToast("너무 눌러서 방전됨... 꼬르륵 💦");
+                pokeCount = 0;
+            }
+        }
+
+        // 3페이지: 햄버거 소화 미니게임
+        let burgerHp = 100;
+        function digestBurger() {
+            if(burgerHp <= 0) return; // 이미 소화됨
+            
+            burgerHp -= 25;
+            document.getElementById('burger-hp').style.width = burgerHp + '%';
+            
+            // 흔들림 애니메이션 추가
+            const burgerBtn = document.getElementById('burger-btn');
+            burgerBtn.classList.remove('animate-shake');
+            void burgerBtn.offsetWidth; // trigger reflow
+            burgerBtn.classList.add('animate-shake');
+
+            if(burgerHp > 0) {
+                showToast("효소 투입 중! 씹고 뜯고 맛보고 💦");
+            } else {
+                showToast("소화 완료! 에너지(ATP) 획득! ⚡🎉");
+                document.getElementById('burger-btn').innerHTML = "🍽️"; // 빈 접시
+                
+                const atp = document.getElementById('atp-result');
+                atp.classList.remove('opacity-30', 'grayscale', 'scale-75');
+                atp.classList.add('opacity-100', 'scale-125', 'animate-glow');
+            }
+        }
+
+        // 5페이지: 직업 룰렛
+        const jobs = [
+            "🧬 전설의 세포치료제 연구원", 
+            "🩺 억대 연봉 헬스케어 컨설턴트", 
+            "🌱 힙스터 스마트팜 CEO", 
+            "🔬 노벨상 수상 생명공학자",
+            "💊 만병통치약 개발 약학연구원"
+        ];
+        let isSpinning = false;
+        function spinRoulette() {
+            if(isSpinning) return;
+            isSpinning = true;
+            
+            const resultDiv = document.getElementById('roulette-result');
+            let count = 0;
+            const maxCount = 20; // 룰렛 돌아가는 횟수
+            
+            showToast("과연 내 적성은?! 두구두구... 🥁");
+
+            const spinInterval = setInterval(() => {
+                resultDiv.innerText = jobs[Math.floor(Math.random() * jobs.length)];
+                count++;
+                
+                if(count >= maxCount) {
+                    clearInterval(spinInterval);
+                    const finalJob = jobs[Math.floor(Math.random() * jobs.length)];
+                    resultDiv.innerHTML = `<span class="text-yellow-300 animate-pulse">${finalJob}</span>`;
+                    isSpinning = false;
+                    showToast("당신의 운명은 정해졌습니다! ✨");
+                }
+            }, 100);
+        }
+
+        // 8페이지: Confetti Fireworks Logic (폭죽 효과)
+        function triggerConfetti(btn) {
+            // 클릭 시 텍스트를 변경하고 원래대로 돌아가는 타이머(setTimeout)를 삭제하여 계속 유지되게 함
+            btn.innerHTML = "탁월한 선택입니다! 🎉";
+            
+            // 색상 및 스타일 영구 변경 (처음 클릭할 때만 클래스 교체)
+            if (btn.classList.contains('from-yellow-400')) {
+                btn.classList.replace('from-yellow-400', 'from-emerald-400');
+                btn.classList.replace('to-yellow-300', 'to-emerald-300');
+                btn.classList.replace('border-yellow-200', 'border-emerald-200');
+                btn.classList.replace('text-purple-900', 'text-white'); // 글씨 색상도 흰색으로 눈에 띄게 변경
+            }
+
+            var duration = 4 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 60 * (timeLeft / duration);
+                
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
